@@ -1,0 +1,41 @@
+Description:
+Given a string containing only digits, restore it by returning all possible valid IP address combinations.
+
+Example:
+
+Input: "25525511135"
+Output: ["255.255.11.135", "255.255.111.35"]
+
+Solution:
+class Solution {
+public:
+    vector<string> restoreIpAddresses(string s) {
+        vector<string> results;
+        helper(s, results, "", 4);
+        return results;
+    }
+    
+private:
+    void helper(string s, vector<string>& results, string address, int dotIdx) {
+        if (dotIdx == 0) {
+            if (s.empty())
+                results.push_back(address);
+        } else {
+            for (int i = 1; i < 4; i++) {
+                if (s.size() >= i && isValid(s.substr(0, i))) {
+                    if (dotIdx == 1) 
+                        // 每次用string i之后剩下的部分递归
+                        helper(s.substr(i), results, address + s.substr(0, i), dotIdx - 1);
+                    else 
+                        helper(s.substr(i), results, address + s.substr(0, i) + ".", dotIdx - 1); 
+                }
+            }
+        }
+    }
+    bool isValid(string s) {
+        // 每串字符长度不超过3，如果长度大于1首位不能为0，字符不能大于255
+        if (s.empty() || s.size() > 3 || (s.size() > 1 && s[0] == '0')) return false;
+        int num = atoi(s.c_str());
+        return num <= 255 && num >= 0;
+    }
+};
